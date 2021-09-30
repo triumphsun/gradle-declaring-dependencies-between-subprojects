@@ -1,0 +1,59 @@
+buildscript {
+
+}
+
+plugins {
+	id 'java'
+	id 'application'
+}
+
+java {
+
+	repositories {
+		mavenCentral()
+	}
+
+	sourceSets {
+		integrationTest {
+			compileClasspath += sourceSets.main.output
+			runtimeClasspath += sourceSets.main.output
+		}
+	}
+
+	configurations {
+		integrationTestImplementation.extendsFrom implementation
+		integrationTestRuntimeOnly.extendsFrom runtimeOnly
+	}
+
+	dependencies {
+		implementation project(':module-domain')
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+
+	tasks.register('integrationTest', Test) {
+		description = 'Runs integration tests.'
+		group = 'verification'
+
+		testClassesDirs = sourceSets.integrationTest.output.classesDirs
+		classpath = sourceSets.integrationTest.runtimeClasspath
+		it.mustRunAfter tasks.named('test')
+	}
+
+	tasks.named('check') {
+		it.dependsOn integrationTest
+	}
+
+	tasks.named('compileJava') {
+		it.dependsOn project(':module-domain').tasks.named('check')
+	}
+
+	sourceCompatibility JavaVersion.VERSION_1_8
+	targetCompatibility JavaVersion.VERSION_1_8
+}
+
+application {
+	mainClassName 'com.suntri.Application'
+}

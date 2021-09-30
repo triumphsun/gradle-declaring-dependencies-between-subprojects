@@ -1,0 +1,5 @@
+rootProject.name = 'gradle-declaring-dependencies-between-subprojects'
+
+include 'module-domain'
+include 'module-cli'
+include 'module-web'
